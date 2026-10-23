@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Күш шамасы, бағыты және түсу нүктесі</title>
+<style>
+:root{--bg:#f3f8ff;--card:#fff;--tx:#14213d;--mut:#5b6b8a;--pr:#2563eb;--ac:#f97316;--ok:#16a34a;--bad:#dc2626;--bd:#d6e2fb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1526;--card:#16213b;--tx:#e8eefc;--mut:#9fb0d3;--pr:#60a5fa;--ac:#fb923c;--ok:#4ade80;--bad:#f87171;--bd:#2a3b63}}
+:root[data-theme="dark"]{--bg:#0d1526;--card:#16213b;--tx:#e8eefc;--mut:#9fb0d3;--pr:#60a5fa;--ac:#fb923c;--ok:#4ade80;--bad:#f87171;--bd:#2a3b63}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+header{background:linear-gradient(135deg,#0f766e,#2563eb);color:#fff;padding:22px 16px;text-align:center}
+header h1{margin:0 0 6px;font-size:clamp(1.2rem,4vw,1.8rem)}header p{margin:0;opacity:.9}
+main{max-width:1000px;margin:0 auto;padding:12px}
+section{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin:14px 0}
+h2{margin:0 0 10px;font-size:1.25rem;color:var(--pr)}h3{margin:14px 0 6px}
+canvas{width:100%;height:auto;border-radius:12px;border:1px solid var(--bd);display:block}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
+button,select{font:inherit;border-radius:10px;border:1px solid var(--bd);padding:9px 13px;background:var(--card);color:var(--tx);cursor:pointer}
+button.p{background:var(--pr);color:#fff;border-color:var(--pr)}button.a{background:var(--ac);color:#fff;border-color:var(--ac)}button.g{background:var(--ok);color:#fff;border-color:var(--ok)}
+button.sel{outline:3px solid var(--ac)}button:active{transform:scale(.97)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:8px}
+.stats div{background:var(--bg);border-radius:10px;padding:8px;text-align:center;font-size:.85rem;color:var(--mut)}.stats b{display:block;font-size:1.15rem;color:var(--tx)}
+input[type=range]{width:min(100%,340px)}
+.q{border:1px solid var(--bd);border-radius:12px;padding:10px;margin:10px 0}
+.q label{display:block;padding:5px 8px;border-radius:8px;cursor:pointer}
+.fb{margin-top:6px;font-size:.92rem}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.score{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ac);color:#fff;text-align:center;padding:6px;font-weight:700}
+details{border:1px solid var(--bd);border-radius:10px;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:600}
+textarea{width:100%;min-height:70px;font:inherit;border-radius:10px;border:1px solid var(--bd);padding:8px;background:var(--bg);color:var(--tx)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.85rem}th,td{border:1px solid var(--bd);padding:5px 8px;text-align:center;white-space:nowrap}th{background:var(--bg)}
+.bar{display:inline-block;height:22px;background:var(--pr);border-radius:4px;color:#fff;text-align:right;padding-right:4px;line-height:22px}
+.note{background:var(--bg);border-left:4px solid var(--ac);padding:8px 12px;border-radius:8px;font-size:.92rem}
+</style>
+</head>
+<body>
+<header><h1>➡️ Күш шамасы, бағыты және түсу нүктесі</h1><p>Виртуалды физика зертханасы · 2-топ</p></header>
+<div class="score">Ұпай: <span id="sc">0</span> / 10</div>
+<main>
+
+<section>
+<h2>1. Теориялық кіріспе</h2>
+<p>Күш – <b>векторлық шама</b>. Оны толық сипаттау үшін тек сан жеткіліксіз, үш сипаттама қажет:</p>
+<ul><li><b>Модулі (шамасы)</b> – күштің сандық мәні, ньютонмен (Н) өлшенеді.</li><li><b>Бағыты</b> – күш қай жаққа әсер етеді. Ол бағдаршамен (көрсеткімен) кескінделеді.</li><li><b>Түсу нүктесі</b> – күш денеге түсірілген нүкте.</li></ul>
+<p>Күш векторының ұзындығы оның модуліне пропорционал: күш неғұрлым үлкен болса, көрсеткі соғұрлым ұзын.</p>
+<p><b>Мысал:</b> автомобильді итергенде, күшті арттырсақ, көрсеткі ұзарады. Автомобильді кері итерсек, көрсеткінің бағыты қарама-қарсы болады.</p>
+</section>
+
+<section>
+<h2>2. Интерактивті модель</h2>
+<div class="row"><label>Модель: <select id="mode"><option value="cart">Арба (түзу сызықты қозғалыс)</option><option value="plank">Тіреу осі бар тақта (айналу)</option></select></label></div>
+<canvas id="cv" width="900" height="320"></canvas>
+<div class="stats"><div>Күш F<b id="oF">0 Н</b></div><div>Бағыты<b id="oD">→ оңға</b></div><div>Түсу нүктесі<b id="oP">орталық</b></div><div id="l1">Жылдамдық<b id="o1">0 м/с</b></div><div id="l2">Жол<b id="o2">0 м</b></div><div>Уақыт<b id="oT">0 с</b></div></div>
+<div class="note" id="cond"></div>
+<div class="row"><label>Күш шамасы: <b id="sv">40</b> Н<br><input type="range" id="fs" min="0" max="100" value="40"></label></div>
+<div class="row"><b>Бағыты:</b><button id="dR" class="sel">→ Оңға</button><button id="dL">← Солға</button></div>
+<div class="row"><b>Түсу нүктесі:</b><span id="pts"></span></div>
+<div class="row"><button class="g" id="bGo">▶ Тәжірибені бастау</button><button class="a" id="bPause">⏸ Тоқтату</button><button id="bReset">↺ Қайта бастау</button><button class="p" id="bLog">📋 Нәтижені кестеге жазу</button></div>
+<p class="note">Бір уақытта бір параметрді ғана өзгерт, қалғандарын тұрақты сақта. Әр тәжірибеден кейін нәтижені кестеге жаз.</p>
+</section>
+
+<section>
+<h2>3. Зерттеу кезеңдері</h2>
+<div id="stg"></div>
+<h3>Нәтижелер кестесі</h3>
+<div class="tw"><table><thead><tr><th>№</th><th>Модель</th><th>F, Н</th><th>Бағыты</th><th>Нүкте</th><th>Нәтиже</th></tr></thead><tbody id="tb"><tr><td colspan="6">Кесте бос. Тәжірибе жасап, «Нәтижені кестеге жазу» түймесін бас.</td></tr></tbody></table></div>
+</section>
+
+<section>
+<h2>4. Интерактивті тапсырмалар</h2>
+<h3>А) Күш векторының бағытын анықта (3 раунд)</h3>
+<canvas id="dc" width="500" height="90" style="max-width:500px"></canvas>
+<div class="row"><button onclick="dAns(1)">→ Оңға</button><button onclick="dAns(-1)">← Солға</button><button onclick="dNew()">Келесі сурет</button><span id="dfb" class="fb"></span></div>
+<h3>Ә) Күш шамасы мен вектор ұзындығын сәйкестендір</h3>
+<div class="q" id="mt"></div>
+<h3>Б) Модулін, бағытын және түсу нүктесін ажырат</h3>
+<div class="q">
+<p>«Күш 30 Н» – бұл күштің <select id="k1"></select>.<br>«Күш оңға бағытталған» – бұл күштің <select id="k2"></select>.<br>«Күш арбаның алдыңғы бөлігіне түсірілген» – бұл күштің <select id="k3"></select>.</p>
+<button class="p" id="bK">Тексеру</button><div class="fb" id="kfb"></div></div>
+<h3>В) Тест (5 сұрақ)</h3>
+<div id="quiz"></div>
+</section>
+
+<section>
+<h2>5. Топтық зерттеу мен қорғау</h2>
+<details><summary>Неліктен күш векторлық шама деп аталады?</summary><p>Күштің әсері тек сан мәніне емес, бағытына да байланысты. Сондықтан күшті модулімен, бағытымен және түсу нүктесімен сипаттайды, оны көрсеткімен кескіндейді.</p></details>
+<details><summary>Күштің модулі нені білдіреді?</summary><p>Күштің модулі – оның сандық мәні, яғни күштің қаншалықты үлкен екенін көрсетеді. Бірлігі – ньютон (Н).</p></details>
+<details><summary>Күштің бағыты қалай көрсетіледі?</summary><p>Күштің бағыты көрсеткімен (бағдаршамен) көрсетіледі. Көрсеткінің ұшы күш қай жаққа әсер ететінін білдіреді.</p></details>
+<details><summary>Күштің түсу нүктесі дегеніміз не?</summary><p>Күш денеге түсірілген нүкте. Түзу сызықты қозғалыс қарастырылатын қарапайым модельде нүктені ауыстыру қозғалысты өзгертпейді. Тіреу осі бар денеде түсу нүктесі айналуға әсер етеді.</p></details>
+<details><summary>Күштің әсерін зерттегенде қандай параметрлерді тұрақты сақтау керек?</summary><p>Бір уақытта бір параметрді ғана өзгерту керек. Мысалы, күштің шамасын зерттегенде бағыт, түсу нүктесі, дененің массасы және үйкеліс тұрақты болуы тиіс.</p></details>
+<details><summary>Автомобильді итеру мысалында күштің әсерін қалай түсіндіруге болады?</summary><p>Итеру күші үлкен болса, автомобиль тезірек жылдамдайды. Күш бағыты өзгерсе, автомобиль қарама-қарсы жаққа қозғалады. Күш үйкеліс күшінен аз болса, автомобиль қозғалмайды.</p></details>
+</section>
+
+<section>
+<h2>6. Қорытынды</h2>
+<div class="q" id="auto"></div>
+<p><b>Менің зерттеу қорытындым:</b></p>
+<textarea id="myc" placeholder="Тәжірибе нәтижелерін салыстырып, қорытындыңды жаз..."></textarea>
+<div class="row"><button class="p" id="bRes">Қорытындыны жаңарту</button></div>
+<div class="q"><b>Топтың қорғауына арналған қысқа қорытынды:</b> күш – векторлық шама. Оның әсері модуліне, бағытына және түсу нүктесіне байланысты. Күш векторы көрсеткімен кескінделіп, оның ұзындығы күш модуліне сәйкес келеді.
+<p><b>Үш негізгі тұжырым:</b></p><ol><li>Күштің модулі артқан сайын, оның әсері (жылдамдықтың өзгеруі) күшейеді.</li><li>Күш бағыты өзгерсе, дененің қозғалыс бағыты да өзгереді.</li><li>Түсу нүктесі айналу осі бар денеде айналуға әсер етеді, ал түзу сызықты қозғалыс қарастырылатын қарапайым модельде қозғалысты өзгертпейді.</li></ol></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const cv=$('cv'),c=cv.getContext('2d');
+const CM=20,CFR=20,PM=20,PL=2,PI=PM*PL*PL/3;
+let sc=0,done={};
+function pt(k){if(!done[k]){done[k]=1;sc++;$('sc').textContent=sc}}
+let dir=1,point=1,S,logs=[],obsT={};
+const names={cart:['алдыңғы','орталық','артқы'],plank:['жоғарғы ұшы','ортасы','тіреу нүктесі']};
+function init(){S={x:0,v:0,th:0,w:0,t:0,run:false}}init();
+function mode(){return $('mode').value}
+function pts(){const n=names[mode()];$('pts').innerHTML=n.map((t,i)=>`<button id="pb${i}" class="${i===point?'sel':''}" onclick="setP(${i})">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}
+window.setP=i=>{point=i;pts();ui()};
+function cond(){$('cond').innerHTML=mode()==='cart'?'<b>Шарттар:</b> арбаның массасы 20 кг, үйкеліс күші 20 Н (күш 20 Н-дан аз болса, арба қозғалмайды). Түзу сызықты қозғалыс қарастырылады, арба айналмайды.':'<b>Шарттар:</b> тақтаның массасы 20 кг, ұзындығы 2 м. Тақта төменгі нүктесінде бекітілген тіреу осінің айналасында айналады (қызыл белгі). Үйкеліс және ауырлық күші ескерілмейді.'}
+$('mode').onchange=()=>{point=1;init();pts();cond();swap();ui()};
+function swap(){const p=mode()==='plank';$('l1').firstChild.textContent=p?'Бұрыштық жылдамдық':'Жылдамдық';$('l2').firstChild.textContent=p?'Бұрылу бұрышы':'Жол'}
+$('fs').oninput=()=>{$('sv').textContent=$('fs').value;ui()};
+function setDir(d){dir=d;$('dR').className=d>0?'sel':'';$('dL').className=d<0?'sel':'';ui()}
+$('dR').onclick=()=>setDir(1);$('dL').onclick=()=>setDir(-1);
+$('bGo').onclick=()=>{S.run=true};$('bPause').onclick=()=>{S.run=false};
+$('bReset').onclick=()=>{init();ui()};
+function F(){return +$('fs').value}
+function ui(){$('oF').textContent=F()+' Н';$('oD').textContent=dir>0?'→ оңға':'← солға';$('oP').textContent=names[mode()][point];$('oT').textContent=S.t.toFixed(1)+' с';
+if(mode()==='cart'){$('o1').textContent=S.v.toFixed(1)+' м/с';$('o2').textContent=Math.abs(S.x).toFixed(1)+' м'}
+else{$('o1').textContent=S.w.toFixed(2)+' рад/с';$('o2').textContent=(S.th*57.3).toFixed(0)+'°'}
+draw()}
+let last=performance.now();
+function step(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+if(S.run){S.t+=dt;const f=F()*dir;
+if(mode()==='cart'){let a=0;
+if(S.v===0){if(Math.abs(f)>CFR)a=(f-Math.sign(f)*CFR)/CM}
+else{a=(f-Math.sign(S.v)*CFR)/CM}
+let nv=S.v+a*dt;if(S.v!==0&&Math.sign(nv)!==Math.sign(S.v)&&Math.abs(f)<=CFR)nv=0;
+S.v=nv;S.x+=S.v*dt}
+else{const r=[2,1,0][point];const al=f*r*Math.cos(S.th)/PI;S.w+=al*dt;S.th+=S.w*dt;
+const lim=1.4;if(Math.abs(S.th)>=lim){S.th=Math.sign(S.th)*lim;S.w=0}}
+}
+ui();requestAnimationFrame(step)}
+function arrow(x,y,len,col,lbl){if(len<2)return;const d=Math.sign(len),L=Math.abs(len);c.strokeStyle=col;c.fillStyle=col;c.lineWidth=7;
+c.beginPath();c.moveTo(x,y);c.lineTo(x+d*(L-4),y);c.stroke();
+c.beginPath();c.moveTo(x+d*L,y);c.lineTo(x+d*(L-22),y-14);c.lineTo(x+d*(L-22),y+14);c.fill();
+c.font='bold 16px sans-serif';c.textAlign='center';c.fillText(lbl,x+d*L/2,y-16)}
+function draw(){const W=900,H=320;c.clearRect(0,0,W,H);
+c.fillStyle='#e0f2fe';c.fillRect(0,0,W,H);c.fillStyle='#94a3b8';c.fillRect(0,250,W,70);
+const len=F()*dir*2.4;
+if(mode()==='cart'){
+const px=30,off=((S.x*px)%100+100)%100;c.strokeStyle='#475569';c.lineWidth=2;
+for(let i=-1;i<11;i++){const x=i*100-off;c.beginPath();c.moveTo(x,250);c.lineTo(x,264);c.stroke()}
+const cx=390,cy=160,w=120;
+c.fillStyle='#2563eb';c.fillRect(cx,cy,w,56);c.fillStyle='#1e3a8a';c.fillRect(cx+8,cy+8,104,10);
+c.fillStyle='#111827';[cx+24,cx+96].forEach(x=>{c.beginPath();c.arc(x,cy+68,15,0,7);c.fill()});
+const px0=[cx+w,cx+w/2,cx][point],py=cy+30;
+c.fillStyle='#dc2626';c.beginPath();c.arc(px0,py,8,0,7);c.fill();
+arrow(px0,py-60+60,len,'#f97316','F = '+F()+' Н');
+c.fillStyle='#14213d';c.font='13px sans-serif';c.textAlign='center';c.fillText('түсу нүктесі: '+names.cart[point],px0,py+34>cy+56?cy-12:py+34);
+c.fillText('m = 20 кг',cx+w/2,cy-24)}
+else{const px=450,py=250,L=PL*80;
+const tx=px+L*Math.sin(S.th),ty=py-L*Math.cos(S.th);
+c.strokeStyle='#7c3aed';c.lineWidth=18;c.lineCap='round';c.beginPath();c.moveTo(px,py);c.lineTo(tx,ty);c.stroke();c.lineCap='butt';
+c.fillStyle='#dc2626';c.beginPath();c.arc(px,py,12,0,7);c.fill();c.fillStyle='#14213d';c.font='13px sans-serif';c.textAlign='center';c.fillText('тіреу осі',px,py+30);
+const r=[2,1,0][point]*80,ax=px+r*Math.sin(S.th),ay=py-r*Math.cos(S.th);
+c.fillStyle='#f59e0b';c.beginPath();c.arc(ax,ay,8,0,7);c.fill();
+arrow(ax,ay,len,'#f97316','F = '+F()+' Н');
+c.fillStyle='#14213d';c.fillText('m = 20 кг, L = 2 м',px+110,60)}
+c.lineWidth=1}
+requestAnimationFrame(step);
+// log
+$('bLog').onclick=()=>{const m=mode(),res=m==='cart'?`v = ${S.v.toFixed(1)} м/с, жол = ${Math.abs(S.x).toFixed(1)} м`:`φ = ${(S.th*57.3).toFixed(0)}°, ω = ${S.w.toFixed(2)} рад/с`;
+logs.push({m:m==='cart'?'арба':'тақта',F:F(),d:dir>0?'оңға':'солға',p:names[m][point],r:res,t:S.t.toFixed(1),mm:m,v:m==='cart'?S.v:S.th,Fv:F(),dv:dir,pi:point});
+$('tb').innerHTML=logs.map((l,i)=>`<tr><td>${i+1}</td><td>${l.m}</td><td>${l.F}</td><td>${l.d}</td><td>${l.p}</td><td>${l.r} (t = ${l.t} с)</td></tr>`).join('');
+flags();res()};
+function flags(){const cs=logs.filter(l=>l.mm==='cart'),pl=logs.filter(l=>l.mm==='plank');
+const diffF=cs.some((a,i)=>cs.some((b,j)=>i<j&&a.dv===b.dv&&a.pi===b.pi&&a.Fv!==b.Fv&&Math.abs(a.v-b.v)>.1));
+const diffD=cs.some((a,i)=>cs.some((b,j)=>i<j&&a.Fv===b.Fv&&a.dv!==b.dv&&a.Fv>20&&a.v*b.v<0));
+const diffP=pl.some((a,i)=>pl.some((b,j)=>i<j&&a.Fv===b.Fv&&a.dv===b.dv&&a.pi!==b.pi));
+const cp=cs.some((a,i)=>cs.some((b,j)=>i<j&&a.Fv===b.Fv&&a.dv===b.dv&&a.pi!==b.pi));
+obsT={A:diffF,B:diffD,V:diffP||cp};obsT.cp=cp;obsT.pp=diffP;rstg()}
+const st=[['А','Күш шамасын арттырғанда қозғалыс қалай өзгереді? (Арба: бағыт пен нүктені өзгертпей, күшті 40 Н және 80 Н қылып екі тәжірибе жаса.)','A'],['Ә','Күш бағытын кері өзгерткенде не болады? (Бағыт солға болғанда ең болмағанда бір тәжірибе жаса.)','B'],['Б','Түсу нүктесін өзгертіп салыстыр. Арба және тіреулі тақта үшін нәтижелер бірдей ме? (Екі модельде күш пен бағытты өзгертпей, нүктені ауыстырып тәжірибе жаса.)','V']];
+const obsTx={};
+function rstg(){$('stg').innerHTML=st.map(s=>`<div class="q"><b>${s[0]}) ${s[1]}</b><div class="fb">Кестеде салыстыруға жеткілікті деректер: ${obsT[s[2]]?'<span class="ok">иә ✔</span>':'әлі жоқ ⏳'}</div>
+<p>Бақылау нәтижесін енгіз:</p><textarea id="ob${s[2]}" oninput="obsTx['${s[2]}']=this.value">${obsTx[s[2]]||''}</textarea></div>`).join('')+'<div class="q"><b>В) Әр тәжірибеден кейін бақылауыңды жаз</b><br>Жоғарыдағы өрістерге бақылауларыңды енгіз, олар қорытындыда көрінеді.</div>'}
+window.obsTx=obsTx;
+// tasks
+let dc=document.getElementById('dc').getContext('2d'),dd=1,dn=0,dDone=false;
+function dNew(){dd=Math.random()<.5?1:-1;dDone=false;const n=20+Math.floor(Math.random()*60);dd2=n;const x=dc;x.clearRect(0,0,500,90);x.fillStyle='#e0f2fe';x.fillRect(0,0,500,90);x.fillStyle='#2563eb';x.fillRect(205,30,90,40);x.fillStyle='#dc2626';x.beginPath();x.arc(250,50,6,0,7);x.fill();
+x.strokeStyle='#f97316';x.fillStyle='#f97316';x.lineWidth=6;const L=n*2.2;x.beginPath();x.moveTo(250,50);x.lineTo(250+dd*(L-4),50);x.stroke();x.beginPath();x.moveTo(250+dd*L,50);x.lineTo(250+dd*(L-18),38);x.lineTo(250+dd*(L-18),62);x.fill();$('dfb').textContent=''}
+let dd2=0;dNew();
+window.dAns=a=>{if(dDone){$('dfb').innerHTML='Келесі суретті таңда.';return}dDone=true;
+if(a===dd){dn++;if(dn<=3)pt('d'+dn);$('dfb').innerHTML='<span class="ok">Дұрыс! Көрсеткінің ұшы '+(dd>0?'оңға':'солға')+' қараған.</span>'}else $('dfb').innerHTML='<span class="bad">Қате. Көрсеткінің ұшы '+(dd>0?'оңға':'солға')+' қараған.</span>'};
+const mt=[[40,'20 Н'],[80,'40 Н'],[160,'80 Н']];const opts=['','20 Н','40 Н','80 Н'];
+$('mt').innerHTML=mt.map((m,i)=>`<div class="row"><div style="width:${m[0]}px;max-width:70%" class="bar">▶</div> = <select id="mt${i}">${opts.map(o=>`<option>${o||'…'}</option>`).join('')}</select></div>`).join('')+'<button class="p" id="bM">Тексеру</button><div class="fb" id="mfb"></div>';
+$('bM').onclick=()=>{const ok=mt.every((m,i)=>$('mt'+i).value===m[1]);if(ok){pt('m');$('mfb').innerHTML='<span class="ok">Дұрыс! Вектор ұзындығы күш модуліне пропорционал.</span>'}else $('mfb').innerHTML='<span class="bad">Қате. Ұзын көрсеткі үлкен күшке сәйкес келеді.</span>'};
+['k1','k2','k3'].forEach(k=>$(k).innerHTML='<option value="">…</option><option value="m">модулі</option><option value="b">бағыты</option><option value="n">түсу нүктесі</option>');
+$('bK').onclick=()=>{if($('k1').value==='m'&&$('k2').value==='b'&&$('k3').value==='n'){pt('k');$('kfb').innerHTML='<span class="ok">Дұрыс! Үш сипаттаманы ажырата алдың.</span>'}else $('kfb').innerHTML='<span class="bad">Қате. Сан – модулі, жағы – бағыты, нүкте – түсу нүктесі.</span>'};
+const qz=[['Күш қандай шама?',['Векторлық шама','Скалярлық шама','Күш шама емес'],0,'Күштің модулі де, бағыты да бар, сондықтан ол векторлық шама.'],
+['Күш векторы қалай кескінделеді?',['Нүктемен','Көрсеткімен (бағдаршамен)','Шеңбермен'],1,'Күш бағдаршамен кескінделеді, көрсеткінің бағыты күш бағытын көрсетеді.'],
+['Күштің модулі нені білдіреді?',['Күштің сандық мәнін','Күштің түсу нүктесін','Дененің түсін'],0,'Модуль – күштің сандық мәні, бірлігі – ньютон.'],
+['Күштің шамасы 2 есе артса, вектор ұзындығы қалай өзгереді?',['Өзгермейді','2 есе ұзарады','2 есе қысқарады'],1,'Вектор ұзындығы күш модуліне пропорционал.'],
+['Түсу нүктесі дегеніміз не?',['Күш денеге түсірілген нүкте','Күштің өлшем бірлігі','Дененің массасы'],0,'Түсу нүктесі – күш денеге түсірілген орын.']];
+$('quiz').innerHTML=qz.map((s,i)=>`<div class="q"><b>${i+1}. ${s[0]}</b>${s[1].map((t,j)=>`<label><input type="radio" name="z${i}" onchange="za(${i},${j})"> ${t}</label>`).join('')}<div class="fb" id="zf${i}"></div></div>`).join('');
+window.za=(i,j)=>{const s=qz[i],r=$('zf'+i);if(j===s[2]){pt('z'+i);r.innerHTML='<span class="ok">Дұрыс! +1 ұпай. </span>'+s[3]}else r.innerHTML='<span class="bad">Қате. </span>'+s[3]};
+function res(){const n=logs.length;let h='';
+if(!n)h='<p>Тәжірибе кестесі әлі бос. Модельде тәжірибе жасап, нәтижені кестеге жаз.</p>';
+else{h='<p>Жазылған тәжірибелер саны: <b>'+n+'</b>.</p><ul>';
+h+='<li>'+(obsT.A?'Күш модулі артқанда арбаның жылдамдығы көбірек өзгерді.':'Күш шамасын салыстыру үшін тәжірибелер әлі жеткіліксіз.')+'</li>';
+h+='<li>'+(obsT.B?'Күш бағыты қарама-қарсы болғанда, қозғалыс бағыты да қарама-қарсы болды.':'Бағыттың әсерін салыстыру үшін тәжірибелер әлі жеткіліксіз.')+'</li>';
+h+='<li>'+(obsT.cp?'Арбада күштің түсу нүктесін ауыстырғанда, қозғалыс өзгермеді (түзу сызықты қозғалыс).':'Арбада түсу нүктесін салыстыру тәжірибесі әлі жоқ.')+'</li>';
+h+='<li>'+(obsT.pp?'Тіреу осі бар тақтада түсу нүктесі айналуға әсер етті.':'Тіреулі тақтада түсу нүктесін салыстыру тәжірибесі әлі жоқ.')+'</li></ul>'}
+const o=['A','B','V'].map(k=>obsTx[k]).filter(Boolean);
+if(o.length)h+='<p><b>Менің бақылауларым:</b></p><ul>'+o.map(t=>'<li>'+t.replace(/[<>&]/g,'')+'</li>').join('')+'</ul>';
+$('auto').innerHTML=h+'<p><b>Ұпайым: '+sc+' / 10</b></p>'}
+$('bRes').onclick=res;
+pts();cond();swap();rstg();res();
+</script>
+</body>
+</html>
